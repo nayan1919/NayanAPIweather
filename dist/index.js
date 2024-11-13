@@ -14,14 +14,24 @@ document.getElementById("sea").addEventListener("click", () => {
 // API Key and base URL setup
 let apiKey = "ce841c5cffa60f901516715147260f60";
 let urlBase = "https://api.openweathermap.org/data/2.5/";
-const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric` // 5 days api url
+// const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric` // 5 days api url
 
 // Fetch weather data by city name
 async function getWeatherByCity(city) {
     let url = `${urlBase}weather?q=${city}&appid=${apiKey}&units=metric`;
+    let forecastUrl = `${urlBase}forecast?q=${city}&appid=${apiKey}&units=metric`;
     try {
         const response = await fetch(url);
         const result = await response.json();
+
+        const forecastResponse = await fetch(forecastUrl);
+        const forecastData = await forecastResponse.json();
+       
+        if (forecastResponse.ok) {
+            displayForecast(forecastData);
+        } else {
+            showError("Could not fetch forecast data.");
+        }
 
         if (response.ok) {
             displayWeather(result);
@@ -74,7 +84,7 @@ function displayWeather(data) {
 
     document.querySelector(".nuke").classList.remove("hidden");
     document.querySelector("#city").textContent = data.name;
-    document.querySelector("#temp1").textContent = `Temperature: ${data.main.temp}Â°C`;
+    document.querySelector("#temp1").textContent = `Temperature: ${Math.floor(data.main.temp)}°C`;
     document.querySelector("#temp2").textContent = `Humidity: ${data.main.humidity}%`;
     document.querySelector("#temp3").textContent = `Wind Speed: ${data.wind.speed} m/s`;
     document.querySelector("#temp4").textContent = data.weather[0].description;
@@ -154,9 +164,7 @@ function showError(message) {
     }
 }
 
-// Initialize dropdown
-document.addEventListener("DOMContentLoaded", updateDropdown);
-
+// 5 days weather data fetching and showing
 
 function displayForecast(data) {
     const forecastList = data.list;
@@ -177,17 +185,40 @@ function displayForecast(data) {
         const tempMin = forecast.main.temp_min;
         const tempMax = forecast.main.temp_max;
         const description = forecast.weather[0].description;
-        const icon = `https://openweathermap.org/img/wn/${forecast.weather[0].icon}.png`;
+        
+        // Image selection based on temperature
+        let imageSrc = ""; // Default to an empty source
 
-        // Populate each cell
+        if (temp > 0 && temp <= 24) {
+            imageSrc = "image/windy.png"; // Add your image path here for temperatures between 0 and 20
+        } else if (temp <= 0) {
+            imageSrc = "image/snow.png"; // Add your image path here for temperatures below 0
+        } else if (temp > 24 && temp <= 35) {
+            imageSrc = "image/sun.png"; // Add your image path here for temperatures between 20 and 30
+        } else if (temp >= 36) {
+            imageSrc = "image/hot.png"; // Add your image path here for temperatures 30 and above
+        } else if(description == "Rain") {
+            imageSrc = "image/thunder.png"
+        }
+
+        const iconElement = cells[i].querySelector(".for");
+        iconElement.src = imageSrc;
+
+        // Populate each cell with forecast details
         cells[i].querySelector("h6").textContent = date;
-        cells[i].querySelector(".for").src = icon;
         cells[i].querySelector(".max").textContent = `Temp: ${temp}°C`;
         cells[i].querySelector(".max1").textContent = `Min: ${tempMin}°C`;
         cells[i].querySelector(".max2").textContent = `Max: ${tempMax}°C`;
         cells[i].querySelector(".max3").textContent = description;
+
+        console.log(temp, "Temperature for the forecasted day");
     }
 }
+
+// Initialize dropdown
+document.addEventListener("DOMContentLoaded", updateDropdown);
+
+
 
 
 
