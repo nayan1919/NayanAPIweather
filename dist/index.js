@@ -102,8 +102,10 @@ function displayWeather(data) {
         Wind Speed: ${data.wind.speed} m/s
     </span>`;
 
+    const description = data.weather[0].description;
+    document.querySelector("#temp4").textContent = description.charAt(0).toUpperCase() + description.slice(1);
+    
 
-    document.querySelector("#temp4").textContent = data.weather[0].description;
     document.querySelector("#weather").src = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
 }
 
