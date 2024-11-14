@@ -1,14 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
-	updateDropdown();
+    updateDropdown();
 });
 
 document.getElementById("sea").addEventListener("click", () => {
-	let city = document.getElementById("studentName").value.trim();
-	if (city) {
-		getWeatherByCity(city);
-	} else {
-		showError("Please enter a city name.");
-	}
+    let city = document.getElementById("studentName").value.trim();
+    if (city) {
+        getWeatherByCity(city);
+    } else {
+        showError("Please enter a city name.");
+    }
 });
 
 // API Key and base URL setup
@@ -26,7 +26,7 @@ async function getWeatherByCity(city) {
 
         const forecastResponse = await fetch(forecastUrl);
         const forecastData = await forecastResponse.json();
-       
+
         if (forecastResponse.ok) {
             displayForecast(forecastData);
         } else {
@@ -66,16 +66,16 @@ async function getWeatherByLocation(lat, lon) {
 // Display weather data in the HTML
 function displayWeather(data) {
 
-	const cityElement = document.getElementById("city");
+    const cityElement = document.getElementById("city");
     console.log("City element:", cityElement);  // Checking if this element is found
-    
+
     if (cityElement) {
         cityElement.textContent = data.city;
     } else {
         console.warn("City element not found!");
     }
 
-	const weatherContainer = document.getElementById("nuke");
+    const weatherContainer = document.getElementById("nuke");
     if (weatherContainer) {
         weatherContainer.classList.remove("hidden");
     } else {
@@ -84,9 +84,25 @@ function displayWeather(data) {
 
     document.querySelector(".nuke").classList.remove("hidden");
     document.querySelector("#city").textContent = data.name;
-    document.querySelector("#temp1").textContent = `Temperature: ${Math.floor(data.main.temp)}°C`;
-    document.querySelector("#temp2").textContent = `Humidity: ${data.main.humidity}%`;
-    document.querySelector("#temp3").textContent = `Wind Speed: ${data.wind.speed} m/s`;
+    document.querySelector("#temp1").innerHTML = `
+    <span style="display: inline-flex; align-items: center;">
+        <img src="image/heat1.png" alt="Temperature Icon" style="width: 20px; margin-right: 5px;">
+        Temperature: ${Math.floor(data.main.temp)}°C
+    </span>`;
+
+    document.querySelector("#temp2").innerHTML = `
+    <span style="display: inline-flex; align-items: center;">
+        <img src="image/humidity.png" alt="Humidity Icon" style="width: 20px; margin-right: 5px;">
+        Humidity: ${data.main.humidity}%
+    </span>`;
+
+    document.querySelector("#temp3").innerHTML = `
+    <span style="display: inline-flex; align-items: center;">
+        <img src="image/windock.png" alt="Wind Speed Icon" style="width: 20px; margin-right: 5px;">
+        Wind Speed: ${data.wind.speed} m/s
+    </span>`;
+
+
     document.querySelector("#temp4").textContent = data.weather[0].description;
     document.querySelector("#weather").src = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
 }
@@ -119,7 +135,7 @@ function addToRecentSearches(city) {
 function updateDropdown() {
     let recentCities = JSON.parse(localStorage.getItem("recentCities")) || [];
     const dropdown = document.getElementById("recentCitiesDropdown");
-    
+
     console.log("Recent Cities:", recentCities); // Debugging line
     console.log("Dropdown Element:", dropdown); // Debugging line
 
@@ -153,9 +169,9 @@ function showError(message) {
     // errorDiv.classList.remove("hidden");
     // setTimeout(() => errorDiv.classList.add("hidden"), 3000);
 
-	const errorElement = document.getElementById("error");
+    const errorElement = document.getElementById("error");
     console.log("Error element:", errorElement);  // Check if this element is found
-    
+
     if (errorElement) {
         errorElement.textContent = message;
         errorElement.classList.remove("hidden");  // Make it visible
@@ -185,7 +201,7 @@ function displayForecast(data) {
         const tempMin = forecast.main.temp_min;
         const tempMax = forecast.main.temp_max;
         const description = forecast.weather[0].description;
-        
+
         // Image selection based on temperature
         let imageSrc = ""; // Default to an empty source
 
@@ -197,7 +213,7 @@ function displayForecast(data) {
             imageSrc = "image/sun.png"; // Add your image path here for temperatures between 20 and 30
         } else if (temp >= 36) {
             imageSrc = "image/hot.png"; // Add your image path here for temperatures 30 and above
-        } else if(description == "Rain") {
+        } else if (description == "Rain") {
             imageSrc = "image/thunder.png"
         }
 
